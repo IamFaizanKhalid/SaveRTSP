@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/IamFaizanKhalid/SaveRTSP/download"
 	"log"
 	"os"
 	"path/filepath"
@@ -16,16 +17,16 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	err = Run(cfg)
+	err = download.Start(cfg)
 	if err != nil {
 		log.Fatalf("SaveRTSP run err: %v\n", err)
 	}
 }
 
-func readConfig() (Config, error) {
+func readConfig() (download.Config, error) {
 	execDir, err := os.Getwd()
 	if err != nil {
-		return Config{}, err
+		return download.Config{}, err
 	}
 
 	var configPath string
@@ -33,7 +34,7 @@ func readConfig() (Config, error) {
 	flag.StringVar(&configPath, "config", "", "Config path (optional)")
 	flag.Parse()
 
-	var cfg Config
+	var cfg download.Config
 	if configPath == "" {
 		configPath = "config.yaml"
 	}
@@ -43,12 +44,12 @@ func readConfig() (Config, error) {
 	}
 	_, err = os.Stat(configPath)
 	if err != nil {
-		return Config{}, fmt.Errorf("can't load config file: %w", err)
+		return download.Config{}, fmt.Errorf("can't load config file: %w", err)
 	}
 
 	err = configor.Load(&cfg, configPath)
 	if err != nil {
-		return Config{}, fmt.Errorf("can't load config file: %w", err)
+		return download.Config{}, fmt.Errorf("can't load config file: %w", err)
 	}
 
 	return cfg, nil

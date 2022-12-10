@@ -1,4 +1,4 @@
-package main
+package download
 
 import (
 	"fmt"
@@ -23,7 +23,7 @@ type Stream struct {
 	Split int    `yaml:"split"`
 }
 
-func Run(cfg Config) error {
+func Start(cfg Config) error {
 	if len(cfg.Streams) == 0 {
 		return fmt.Errorf("no stream provided in the config")
 	}
