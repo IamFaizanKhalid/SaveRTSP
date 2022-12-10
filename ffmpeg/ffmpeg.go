@@ -1,8 +1,10 @@
 package ffmpeg
 
 import (
+	"bytes"
 	"fmt"
 	"os/exec"
+	"strings"
 )
 
 func New() *ffmpeg {
@@ -32,24 +34,41 @@ func (f *ffmpeg) Options(options *Options) *ffmpeg {
 
 func (f *ffmpeg) Start() error {
 	if f.input == nil {
-		return fmt.Errorf("no input provided")
+		if f.options.InputStream == nil {
+			return fmt.Errorf("no input provided")
+		}
+	} else {
+		f.options.InputStream = f.input
 	}
-	inputArg := fmt.Sprintf("-i %s", *f.input)
 
-	outputArg := "output.mp4"
+	output := "output.mp4"
 	if f.output != nil {
-		outputArg = *f.output
+		output = *f.output
 	}
 
 	if f.options == nil {
 		f.options = DefaultOptions()
 	}
 
-	args := []string{inputArg}
-	args = append(args, f.options.GetStrArguments()...)
-	args = append(args, outputArg)
+	args := f.options.GetStrArguments()
+	args = append(args, output)
 
 	cmd := exec.Command("ffmpeg", args...)
 
-	return cmd.Run()
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+
+	err := cmd.Run()
+	if err != nil {
+		errLines := strings.Split(stderr.String(), "\n")
+
+		var errStr string
+		if len(errLines) > 11 {
+			errStr = strings.Join(errLines[11:], "\n")
+		}
+
+		return fmt.Errorf("%s:\n%s", err, errStr)
+	}
+
+	return nil
 }

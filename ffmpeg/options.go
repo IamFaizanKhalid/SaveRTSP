@@ -9,25 +9,25 @@ import (
 
 // Options defines allowed FFmpeg arguments
 type Options struct {
+	RTSPTransport        *string `flag:"-rtsp_transport"`      // protocol to use to capture input streams
 	NativeFramerateInput *bool   `flag:"-re"`                  // read input at native frame rate
-	Format               *string `flag:"-f"`                   // force format
+	InputStream          *string `flag:"-i"`                   // input file path
 	VideoCodec           *string `flag:"-vcodec"`              // force video codec ('copy' to copy stream)
 	AudioCodec           *string `flag:"-acodec"`              // force audio codec ('copy' to copy stream)
-	RTSPTransport        *string `flag:"-rtsp_transport"`      // protocol to use to capture input streams
 	MapStreamId          *int    `flag:"-map"`                 // set stream mapping from input streams to output streams. Just enumerate the input streams in the order you want them in the output
+	Format               *string `flag:"-f"`                   // force format
 	SegmentAtClockTime   *int    `flag:"-segment_atclocktime"` // if set to "1" split at regular clock time intervals starting from 00:00 o’clock
-	SegmentTime          *string `flag:"-segment_time"`        // set segment duration (in seconds)
+	SegmentTime          *int    `flag:"-segment_time"`        // set segment duration (in seconds)
 	SegmentFormat        *string `flag:"-segment_format"`      // force format for the segments
 	SegmentNameByTime    *int    `flag:"-strftime"`            // if set to "1" segments will be named by time of file creation
 }
 
 func DefaultOptions() *Options {
 	return &Options{
-		NativeFramerateInput: pointer.Bool(true),
-		Format:               pointer.String("mp4"),
-		VideoCodec:           pointer.String("mpeg-4"),
-		AudioCodec:           pointer.String("aac"),
 		RTSPTransport:        pointer.String("tcp"),
+		NativeFramerateInput: pointer.Bool(true),
+		VideoCodec:           pointer.String("h264"),
+		AudioCodec:           pointer.String("aac"),
 	}
 }
 

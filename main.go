@@ -11,9 +11,14 @@ import (
 )
 
 func main() {
-	_, err := readConfig()
+	cfg, err := readConfig()
 	if err != nil {
 		log.Fatalln(err)
+	}
+
+	err = Run(cfg)
+	if err != nil {
+		log.Fatalf("SaveRTSP run err: %v\n", err)
 	}
 }
 
@@ -47,14 +52,4 @@ func readConfig() (Config, error) {
 	}
 
 	return cfg, nil
-}
-
-type Config struct {
-	Cameras []Camera `yaml:"cameras"`
-}
-
-type Camera struct {
-	Name      string `yaml:"name"`
-	StreamUrl string `yaml:"stream_url"`
-	Split     int    `yaml:"split"`
 }
