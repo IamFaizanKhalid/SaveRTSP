@@ -25,8 +25,8 @@ func (f *ffmpeg) Output(outputPath string) *ffmpeg {
 	return f
 }
 
-func (f *ffmpeg) Options(options Options) *ffmpeg {
-	f.options = &options
+func (f *ffmpeg) Options(options *Options) *ffmpeg {
+	f.options = options
 	return f
 }
 

@@ -3,6 +3,8 @@ package ffmpeg
 import (
 	"fmt"
 	"reflect"
+
+	"github.com/IamFaizanKhalid/pointer"
 )
 
 // Options defines allowed FFmpeg arguments
@@ -20,17 +22,12 @@ type Options struct {
 }
 
 func DefaultOptions() *Options {
-	t := true
-	transport := "tcp"
-	copyCodec := "copy"
-	mp4 := "mp4"
-
 	return &Options{
-		NativeFramerateInput: &t,
-		Format:               &mp4,
-		VideoCodec:           &copyCodec,
-		AudioCodec:           &copyCodec,
-		RTSPTransport:        &transport,
+		NativeFramerateInput: pointer.Bool(true),
+		Format:               pointer.String("mp4"),
+		VideoCodec:           pointer.String("mpeg-4"),
+		AudioCodec:           pointer.String("aac"),
+		RTSPTransport:        pointer.String("tcp"),
 	}
 }
 
