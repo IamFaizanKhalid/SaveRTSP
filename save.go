@@ -12,26 +12,26 @@ import (
 
 type Config struct {
 	OutputPath string   `yaml:"output_path"`
-	Cameras    []Camera `yaml:"cameras"`
+	Streams    []Stream `yaml:"streams"`
 }
 
-type Camera struct {
-	Name      string `yaml:"name"`
-	StreamUrl string `yaml:"stream_url"`
-	Split     int    `yaml:"split"`
+type Stream struct {
+	Name  string `yaml:"name"`
+	Url   string `yaml:"stream_url"`
+	Split int    `yaml:"split"`
 }
 
 func Run(cfg Config) error {
-	if len(cfg.Cameras) == 0 {
-		return fmt.Errorf("no camera provided in the config")
+	if len(cfg.Streams) == 0 {
+		return fmt.Errorf("no stream provided in the config")
 	}
 
 	names := make(map[string]bool)
-	for _, camera := range cfg.Cameras {
-		if _, ok := names[camera.Name]; ok {
-			return fmt.Errorf("repeating camera name: %w", camera.Name)
+	for _, stream := range cfg.Streams {
+		if _, ok := names[stream.Name]; ok {
+			return fmt.Errorf("repeating stream name: %w", stream.Name)
 		}
-		names[camera.Name] = true
+		names[stream.Name] = true
 	}
 
 	pwd, _ := os.Getwd()
@@ -47,15 +47,15 @@ func Run(cfg Config) error {
 
 	var wg sync.WaitGroup
 
-	for _, camera := range cfg.Cameras {
+	for _, stream := range cfg.Streams {
 		wg.Add(1)
-		go func(camera Camera) {
-			err := saveStream(cfg.OutputPath, camera)
+		go func(stream Stream) {
+			err := saveStream(cfg.OutputPath, stream)
 			if err != nil {
-				log.Printf("%s: %s", camera.Name, err)
+				log.Printf("%s: %s", stream.Name, err)
 			}
 			wg.Done()
-		}(camera)
+		}(stream)
 	}
 
 	wg.Wait()
@@ -63,8 +63,8 @@ func Run(cfg Config) error {
 	return nil
 }
 
-func saveStream(outDir string, camera Camera) error {
-	outDir += "/" + camera.Name
+func saveStream(outDir string, stream Stream) error {
+	outDir += "/" + stream.Name
 	err := os.MkdirAll(outDir, 0755)
 	if err != nil {
 		return fmt.Errorf("unable to create the output directory: %w", err)
@@ -78,12 +78,12 @@ Output Directory: %s
 Video Length: %d minutes
 
 `,
-		camera.Name, camera.StreamUrl, outDir, camera.Split,
+		stream.Name, stream.Url, outDir, stream.Split,
 	)
 
 	return ffmpeg.New().
-		Input(camera.StreamUrl).
-		Output(fmt.Sprintf("%s/%s-%%Y%%m%%d-%%H%%M.mp4", outDir, camera.Name)).
+		Input(stream.Url).
+		Output(fmt.Sprintf("%s/%s-%%Y%%m%%d-%%H%%M.mp4", outDir, stream.Name)).
 		Options(&ffmpeg.Options{
 			RTSPTransport:        pointer.String("tcp"),
 			NativeFramerateInput: pointer.Bool(true),
@@ -92,7 +92,7 @@ Video Length: %d minutes
 			MapStreamId:          pointer.Int(0),
 			Format:               pointer.String("segment"),
 			SegmentAtClockTime:   pointer.Int(1),
-			SegmentTime:          pointer.Int(camera.Split * 60),
+			SegmentTime:          pointer.Int(stream.Split * 60),
 			SegmentFormat:        pointer.String("mp4"),
 			SegmentNameByTime:    pointer.Int(1),
 		}).

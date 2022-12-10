@@ -1,8 +1,8 @@
 output_path: ./output
-cameras:
-  - name: Camera1
+streams:
+  - name: Camera
     stream_url: rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mp4
     split: 10
-  - name: Camera2
+  - name: Live Video
     stream_url: rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mp4
     split: 10

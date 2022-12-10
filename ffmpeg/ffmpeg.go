@@ -33,7 +33,8 @@ func (f *ffmpeg) Options(options *Options) *ffmpeg {
 }
 
 func (f *ffmpeg) Start() error {
-	if f.input == nil {
+	if f.input ==
+		nil {
 		if f.options.InputStream == nil {
 			return fmt.Errorf("no input provided")
 		}
