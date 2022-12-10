@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 )
 
@@ -83,7 +84,7 @@ Video Length: %d minutes
 
 	return ffmpeg.New().
 		Input(stream.Url).
-		Output(fmt.Sprintf("%s/%s-%%Y%%m%%d-%%H%%M.mp4", outDir, stream.Name)).
+		Output(fmt.Sprintf("%s/%s-%%Y%%m%%d-%%H%%M.mp4", outDir, strings.ReplaceAll(stream.Name, " ", "+"))).
 		Options(&ffmpeg.Options{
 			RTSPTransport:        pointer.String("tcp"),
 			NativeFramerateInput: pointer.Bool(true),
